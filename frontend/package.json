@@ -1,0 +1,24 @@
+{
+  "name": "aurafit-b2b2c-storefront-sdk",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Headless B2B2C Shopify Plus Storefront & Physiological VTO Telemetry Drawer",
+  "scripts": {
+    "predev": "node -e \"const fs=require('fs'),p='src/app/layout.tsx';if(!fs.existsSync(p)){fs.mkdirSync('src/app',{recursive:true});fs.writeFileSync(p,'import React from \\\"react\\\";export default function RootLayout({children}:{children:React.ReactNode}){return <html lang=\\\"en\\\"><head><meta charSet=\\\"utf-8\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1\\\"/><title>AuraFit B2B2C SDK // Physiological VTO</title><script src=\\\"https://cdn.tailwindcss.com\\\"></script></head><body className=\\\"antialiased bg-slate-50 text-slate-900\\\">{children}</body></html>;}');}\"",
+    "dev": "next dev -H 0.0.0.0 -p 3000",
+    "prebuild": "npm run predev",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p 3000"
+  },
+  "dependencies": {
+    "next": "14.2.4",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.9",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "typescript": "5.5.2"
+  }
+}

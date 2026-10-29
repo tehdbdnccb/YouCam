@@ -1,0 +1,75 @@
+# docker-compose.yml
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aurafit_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-mock_openai_key}
+      - YOUCAM_API_KEY=${YOUCAM_API_KEY:-mock_youcam_key}
+      - YOUCAM_SECRET_KEY=${YOUCAM_SECRET_KEY:-}
+      - YOUCAM_BASE_URL=${YOUCAM_BASE_URL:-https://yce-api-01.makeupar.com}
+      - USE_MOCK_API=${USE_MOCK_API:-True}
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./backend:/app:ro
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/openapi.json', timeout=2)",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks:
+      - aurafit_net
+
+  frontend:
+    image: node:20-alpine
+    container_name: aurafit_frontend
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: sh -c "npm install --no-audit --no-fund && npm run dev"
+    depends_on:
+      backend:
+        condition: service_healthy
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.50"
+          memory: 1024M
+    networks:
+      - aurafit_net
+
+networks:
+  aurafit_net:
+    driver: bridge
